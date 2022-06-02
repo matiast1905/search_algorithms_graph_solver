@@ -35,6 +35,13 @@ class Grid:
         elif self.fill_counter > 1 and cell_current_value != Cell.START.value and cell_current_value != Cell.GOAL.value:
             self.grid[grid_loc.row][grid_loc.column] = Cell.WALL.value
     
+    def fill_empty(self, pos : Tuple[int, int]) -> None:
+        """Fill the grid with an empty value"""
+        grid_loc = GridLocation(pos[0] // SQUARE_SIZE, pos[1] // SQUARE_SIZE)
+        cell_current_value = self.grid[grid_loc.row][grid_loc.column]
+        if self.fill_counter > 1 and cell_current_value == Cell.WALL.value:
+            self.grid[grid_loc.row][grid_loc.column] = Cell.EMPTY.value
+    
     def goal_test(self, gl: GridLocation) -> bool:
         return gl == self.goal
 
@@ -56,13 +63,13 @@ class Grid:
         self.grid[self.start.row][self.start.column] = Cell.START.value
         self.grid[self.goal.row][self.goal.column] = Cell.GOAL.value
     
-    def solve(self):
-        # Test BFS
-        solution = bfs(self.start, self.goal_test, self.successors, True)
-        if solution is None:
-            print("No solution found using breadth-first search!")
-        else:
-            path = node_to_path(solution[0])
-            print(f"Solution using breadth-first search!: {len(path)} steps and {solution[1]} iterations",end = "\n\n")
-            self.mark(path)
+    def solve(self, method = "BFS"):
+        if method == "BFS":
+            solution = bfs(self.start, self.goal_test, self.successors)
+            if solution is None:
+                print("No solution found using breadth-first search!")
+            else:
+                path = node_to_path(solution)
+                print(f"Solution using breadth-first search!: {len(path)}")
+                self.mark(path)
             

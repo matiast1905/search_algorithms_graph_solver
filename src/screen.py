@@ -10,7 +10,7 @@ from grid import Grid
 class Screen:
     """Class to handle the pygame windows"""
 
-    def __init__(self, caption: str, grid: Grid, square_size: int, grid_color: Tuple[int, int, int]) -> None:
+    def __init__(self, caption: str, grid: Grid, solve_method: str, square_size: int, grid_color: Tuple[int, int, int]) -> None:
         pygame.init()
         self.grid = grid
         self.square_size = square_size
@@ -21,6 +21,7 @@ class Screen:
         pygame.display.set_caption(caption)
         self.bg_color = Cell.EMPTY.value
         self.grid_color = grid_color
+        self.solve_method = solve_method
 
     def run(self) -> None:
         """
@@ -37,11 +38,13 @@ class Screen:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self.grid.fill_grid(pygame.mouse.get_pos())
-                if event.button == 3:
-                    self.grid.solve()
+        if any(pygame.mouse.get_pressed()):
+            if pygame.mouse.get_pressed()[0]:
+                self.grid.fill_grid(pygame.mouse.get_pos())
+            elif pygame.mouse.get_pressed()[1]:
+                self.grid.fill_empty(pygame.mouse.get_pos())
+            elif pygame.mouse.get_pressed()[2]:
+                self.grid.solve(self.solve_method)
 
     def _fill_squares(self) -> None:
         """Paint the squares selected by the user"""
@@ -49,7 +52,8 @@ class Screen:
             for col_num, value in enumerate(row):
                 x_min = row_num * self.square_size
                 y_min = col_num * self.square_size
-                rect = pygame.Rect(x_min, y_min, self.square_size, self.square_size)
+                rect = pygame.Rect(
+                    x_min, y_min, self.square_size, self.square_size)
                 color = value
                 pygame.draw.rect(self.screen, color, rect)
 
@@ -75,5 +79,5 @@ class Screen:
 
 
 if __name__ == "__main__":
-    screen = Screen("Maze Solver", Grid(50, 50), SQUARE_SIZE, GRAY)
+    screen = Screen("Maze Solver", Grid(50, 50),"BFS", SQUARE_SIZE, GRAY)
     screen.run()
