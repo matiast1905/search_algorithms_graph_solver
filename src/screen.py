@@ -38,7 +38,10 @@ class Screen:
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                self.grid.fill_grid(pygame.mouse.get_pos())
+                if event.button == 1:
+                    self.grid.fill_grid(pygame.mouse.get_pos())
+                if event.button == 3:
+                    self.grid.solve()
 
     def _fill_squares(self) -> None:
         """Paint the squares selected by the user"""
@@ -46,8 +49,7 @@ class Screen:
             for col_num, value in enumerate(row):
                 x_min = row_num * self.square_size
                 y_min = col_num * self.square_size
-                rect = pygame.Rect(
-                    x_min, y_min, self.square_size, self.square_size)
+                rect = pygame.Rect(x_min, y_min, self.square_size, self.square_size)
                 color = value
                 pygame.draw.rect(self.screen, color, rect)
 
