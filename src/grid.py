@@ -23,15 +23,17 @@ class Grid:
     def fill_grid(self, pos : Tuple[int, int]) -> None:
         """Fill the grid with the appropiate value"""
         grid_loc = GridLocation(pos[0] // SQUARE_SIZE, pos[1] // SQUARE_SIZE)
+        cell_current_value = self.grid[grid_loc.row][grid_loc.column]
         if self.fill_counter == 0:
             self.grid[grid_loc.row][grid_loc.column] = Cell.START.value
             self.start: GridLocation = grid_loc
-        if self.fill_counter == 1:
+            self.fill_counter += 1
+        elif self.fill_counter == 1 and cell_current_value != Cell.START.value:
             self.grid[grid_loc.row][grid_loc.column] = Cell.GOAL.value
             self.goal: GridLocation = grid_loc
-        if self.fill_counter > 1:
+            self.fill_counter += 1
+        elif self.fill_counter > 1 and cell_current_value != Cell.START.value and cell_current_value != Cell.GOAL.value:
             self.grid[grid_loc.row][grid_loc.column] = Cell.WALL.value
-        self.fill_counter += 1
     
     def goal_test(self, gl: GridLocation) -> bool:
         return gl == self.goal
