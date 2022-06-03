@@ -6,7 +6,6 @@ import pygame
 from constants import SQUARE_SIZE, Cell, GRAY
 from grid import Grid
 
-
 class Screen:
     """Class to handle the pygame windows"""
 
@@ -42,7 +41,7 @@ class Screen:
             if pygame.mouse.get_pressed()[0]:
                 self.grid.fill_grid(pygame.mouse.get_pos())
             elif pygame.mouse.get_pressed()[1]:
-                self.grid.fill_empty(pygame.mouse.get_pos())
+                self.grid.delete_grid_value(pygame.mouse.get_pos())
             elif pygame.mouse.get_pressed()[2]:
                 self.grid.solve(self.solve_method)
 

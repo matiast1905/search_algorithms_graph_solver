@@ -17,30 +17,29 @@ class Grid:
         self.n_rows = rows
         self.n_cols = cols    
         self.grid: List[List[Cell]] = [[Cell.EMPTY.value for _ in range(cols)] for _ in range(rows)]
-        # counter is neccesary to know which type of cell are we handling(ie: START, GOAL, WALL, etc.)
-        self.fill_counter = 0
+        self.start = None
+        self.goal = None
 
     def fill_grid(self, pos : Tuple[int, int]) -> None:
         """Fill the grid with the appropiate value"""
         grid_loc = GridLocation(pos[0] // SQUARE_SIZE, pos[1] // SQUARE_SIZE)
-        cell_current_value = self.grid[grid_loc.row][grid_loc.column]
-        if self.fill_counter == 0:
+        if not self.start:
             self.grid[grid_loc.row][grid_loc.column] = Cell.START.value
-            self.start: GridLocation = grid_loc
-            self.fill_counter += 1
-        elif self.fill_counter == 1 and cell_current_value != Cell.START.value:
+            self.start = grid_loc
+        elif not self.goal and grid_loc != self.start:
             self.grid[grid_loc.row][grid_loc.column] = Cell.GOAL.value
-            self.goal: GridLocation = grid_loc
-            self.fill_counter += 1
-        elif self.fill_counter > 1 and cell_current_value != Cell.START.value and cell_current_value != Cell.GOAL.value:
+            self.goal = grid_loc
+        elif grid_loc != self.start and grid_loc != self.goal:
             self.grid[grid_loc.row][grid_loc.column] = Cell.WALL.value
     
-    def fill_empty(self, pos : Tuple[int, int]) -> None:
-        """Fill the grid with an empty value"""
+    def delete_grid_value(self, pos : Tuple[int, int]) -> None:
+        """Remove the value from the grid and leave an empty space"""
         grid_loc = GridLocation(pos[0] // SQUARE_SIZE, pos[1] // SQUARE_SIZE)
-        cell_current_value = self.grid[grid_loc.row][grid_loc.column]
-        if self.fill_counter > 1 and cell_current_value == Cell.WALL.value:
-            self.grid[grid_loc.row][grid_loc.column] = Cell.EMPTY.value
+        self.grid[grid_loc.row][grid_loc.column] = Cell.EMPTY.value
+        if grid_loc == self.start:
+            self.start = None
+        elif grid_loc == self.goal:
+            self.goal = None
     
     def goal_test(self, gl: GridLocation) -> bool:
         return gl == self.goal
