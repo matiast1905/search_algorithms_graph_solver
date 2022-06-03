@@ -21,6 +21,7 @@ class Screen:
         self.bg_color = Cell.EMPTY.value
         self.grid_color = grid_color
         self.solve_method = solve_method
+        self.clock = pygame.time.Clock()
 
     def run(self) -> None:
         """
@@ -29,6 +30,7 @@ class Screen:
         while True:
             self._check_events()
             self._update_screen()
+            self.clock.tick(100)
 
     def _check_events(self) -> None:
         """
