@@ -75,6 +75,9 @@ class Stack(Generic[T]):
     def pop(self) -> T:
         return self._container.pop()  # LIFO
 
+    def pop_left(self) -> T:
+        return self._container.pop(0)
+
     def __repr__(self) -> str:
         return repr(self._container)
 
@@ -93,7 +96,9 @@ class Node(Generic[T]):
 def dfs(initial: T, goal_test: Callable[[T], bool], successors: Callable[[T], List[T]]) -> Optional[Node[T]]:
     # frontier is where we've yet to go
     frontier: Stack[Node[T]] = Stack()
+    explored_nodes: Stack[Node[T]] = Stack()
     frontier.push(Node(initial, None))
+    explored_nodes.push(Node(initial, None))
     # explored is where we've been
     explored: Set[T] = {initial}
 
@@ -103,14 +108,15 @@ def dfs(initial: T, goal_test: Callable[[T], bool], successors: Callable[[T], Li
         current_state: T = current_node.state
         # if we found the goal, we're done
         if goal_test(current_state):
-            return current_node
+            return current_node, explored_nodes
         # check where we can go next and haven't explored
         for child in successors(current_state):
             if child in explored:  # skip children we already explored
                 continue
             explored.add(child)
             frontier.push(Node(child, current_node))
-    return None  # went through everything and never found goal
+            explored_nodes.push(Node(child, current_node))
+    return None, None  # went through everything and never found goal
 
 
 def node_to_path(node: Node[T]) -> List[T]:
@@ -141,11 +147,12 @@ class Queue(Generic[T]):
         return repr(self._container)
 
 
-def bfs(initial: T, goal_test: Callable[[T], bool], successors: Callable[[T], List[T]], 
-        return_iterations: bool =  False) -> Optional[Node[T]]:
+def bfs(initial: T, goal_test: Callable[[T], bool], successors: Callable[[T], List[T]]) -> Optional[Node[T]]:
     # frontier is where we've yet to go
     frontier: Queue[Node[T]] = Queue()
+    explored_nodes: Queue[Node[T]] = Queue()
     frontier.push(Node(initial, None))
+    explored_nodes.push(Node(initial, None))
     # explored is where we've been
     explored: Set[T] = {initial}
     step_counter: int = 0
@@ -156,14 +163,15 @@ def bfs(initial: T, goal_test: Callable[[T], bool], successors: Callable[[T], Li
         current_state: T = current_node.state
         # if we found the goal, we're done
         if goal_test(current_state):
-            return (current_node, step_counter) if return_iterations else current_node
+            return (current_node, explored_nodes)
         # check where we can go next and haven't explored
         for child in successors(current_state):
             if child in explored:  # skip children we already explored
                 continue
             explored.add(child)
             frontier.push(Node(child, current_node))
-    return None  # went through everything and never found goal
+            explored_nodes.push(Node(child, current_node))
+    return None , None # went through everything and never found goal
 
 
 class PriorityQueue(Generic[T]):

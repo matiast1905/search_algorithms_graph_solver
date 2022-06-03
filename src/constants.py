@@ -9,6 +9,7 @@ GRAY = (100, 100, 100)
 ORANGE = (255,69,0)
 LIME = (0,255,0)
 BLUE = (0, 102, 153)
+FUCSIA = (255, 51, 204)
 
 #----------------------------GRID COLORS-------------------------------------------------
 class Cell(Enum):
@@ -17,6 +18,7 @@ class Cell(Enum):
     START = ORANGE
     GOAL = LIME
     PATH = BLUE
+    FINAL_PATH = FUCSIA
 
 #----------------------------PYGAME WINDOWS----------------------------------------------
 ROWS = COLS = 40

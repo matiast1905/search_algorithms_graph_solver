@@ -1,8 +1,10 @@
 from enum import Enum
 from typing import List, NamedTuple, Tuple
+from time import time
 
 from constants import SQUARE_SIZE, Cell
-from generic_search import bfs, node_to_path
+from generic_search import T, Node, Queue, bfs, dfs, node_to_path
+
 
 class GridLocation(NamedTuple):
     row: int
@@ -13,14 +15,16 @@ class Grid:
     """
     Class to manage the grid.
     """
+
     def __init__(self, rows: int, cols: int) -> None:
         self.n_rows = rows
-        self.n_cols = cols    
-        self.grid: List[List[Cell]] = [[Cell.EMPTY.value for _ in range(cols)] for _ in range(rows)]
+        self.n_cols = cols
+        self.grid: List[List[Cell]] = [
+            [Cell.EMPTY.value for _ in range(cols)] for _ in range(rows)]
         self.start = None
         self.goal = None
 
-    def fill_grid(self, pos : Tuple[int, int]) -> None:
+    def fill_grid(self, pos: Tuple[int, int]) -> None:
         """Fill the grid with the appropiate value"""
         grid_loc = GridLocation(pos[0] // SQUARE_SIZE, pos[1] // SQUARE_SIZE)
         if not self.start:
@@ -31,8 +35,8 @@ class Grid:
             self.goal = grid_loc
         elif grid_loc != self.start and grid_loc != self.goal:
             self.grid[grid_loc.row][grid_loc.column] = Cell.WALL.value
-    
-    def delete_grid_value(self, pos : Tuple[int, int]) -> None:
+
+    def delete_grid_value(self, pos: Tuple[int, int]) -> None:
         """Remove the value from the grid and leave an empty space"""
         grid_loc = GridLocation(pos[0] // SQUARE_SIZE, pos[1] // SQUARE_SIZE)
         self.grid[grid_loc.row][grid_loc.column] = Cell.EMPTY.value
@@ -40,7 +44,7 @@ class Grid:
             self.start = None
         elif grid_loc == self.goal:
             self.goal = None
-    
+
     def goal_test(self, gl: GridLocation) -> bool:
         return gl == self.goal
 
@@ -56,19 +60,20 @@ class Grid:
             locations.append(GridLocation(gl.row, gl.column - 1))
         return locations
 
-    def mark(self, path: List[GridLocation]):
+    def mark(self, path: List[GridLocation], final_solution: bool =False):
         for maze_location in path:
-            self.grid[maze_location.row][maze_location.column] = Cell.PATH.value
+            self.grid[maze_location.row][maze_location.column] = Cell.PATH.value if not final_solution else Cell.FINAL_PATH.value
         self.grid[self.start.row][self.start.column] = Cell.START.value
         self.grid[self.goal.row][self.goal.column] = Cell.GOAL.value
-    
-    def solve(self, method = "BFS"):
+
+    def solve(self, method="BFS"):
         if method == "BFS":
-            solution = bfs(self.start, self.goal_test, self.successors)
-            if solution is None:
-                print("No solution found using breadth-first search!")
-            else:
-                path = node_to_path(solution)
-                print(f"Solution using breadth-first search!: {len(path)}")
-                self.mark(path)
-            
+            solution, explored_nodes = bfs(
+                self.start, self.goal_test, self.successors)
+        elif method == "DFS":
+            solution, explored_nodes = dfs(
+                self.start, self.goal_test, self.successors)
+        if solution is None:
+            print("No solution found using breadth-first search!")
+        else:
+            return solution, explored_nodes
