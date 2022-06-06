@@ -1,6 +1,7 @@
 
 #----------------------------COLORS------------------------------------------------------
 from enum import Enum
+from typing import Literal
 
 
 BLACK = (0, 0, 0)
@@ -9,7 +10,7 @@ GRAY = (100, 100, 100)
 ORANGE = (255,69,0)
 LIME = (0,255,0)
 BLUE = (0, 102, 153)
-FUCSIA = (255, 51, 204)
+VIOLET = (190, 0, 219)
 
 #----------------------------GRID COLORS-------------------------------------------------
 class Cell(Enum):
@@ -18,9 +19,12 @@ class Cell(Enum):
     START = ORANGE
     GOAL = LIME
     PATH = BLUE
-    FINAL_PATH = FUCSIA
+    FINAL_PATH = VIOLET
 
 #----------------------------PYGAME WINDOWS----------------------------------------------
 ROWS = COLS = 40
 SQUARE_SIZE = 20
 WINDOWS_WIDTH = WINDOWS_HEIGHT = ROWS * SQUARE_SIZE
+
+#----------------------------MAZE--------------------------------------------------------
+RANDOM_MAZE_SPARSENESS = 0.5
